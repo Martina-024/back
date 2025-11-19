@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+
+{% block title %}JobSwipe - Encuentra tu próximo empleo{% endblock %}
+
+{% block content %}
+<div class="p-5 mb-4 bg-white rounded-3 shadow-sm">
+    <div class="container-fluid py-5">
+        <h1 class="display-5 fw-bold">Bienvenido a JobSwipe</h1>
+        <p class="col-md-8 fs-4">
+            La plataforma de búsqueda de empleo accesible, diseñada para conectar
+            talento con discapacidad con las mejores oportunidades laborales.
+        </p>
+        <p>Tu próximo "match" laboral está a un swipe de distancia.</p>
+
+        {% if not user.is_authenticated %}
+            <a class="btn btn-primary btn-lg" href="{% url 'register' %}" role="button">¡Comienza Ahora!</a>
+            <a class="btn btn-outline-secondary btn-lg" href="{% url 'login' %}" role="button">Ya tengo cuenta</a>
+        {% else %}
+             <a class="btn btn-primary btn-lg" href="{% url 'dashboard' %}" role="button">Ir a mi Panel</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

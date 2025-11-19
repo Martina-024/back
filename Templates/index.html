@@ -1,0 +1,42 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Panel - JobSwipe{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h2 class="h4 mb-0">Mi Panel</h2>
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">¡Bienvenido de vuelta, {{ user.username }}!</h5>
+                <p class="card-text">
+                    Esta es tu página de inicio personal. Solo tú puedes ver esto porque has iniciado sesión.
+                </p>
+                <p>
+                    Desde aquí podrás gestionar tus ofertas, ver tus "matches" y configurar tu perfil.
+                </p>
+                <hr>
+                <h6 class="text-muted">Información de tu cuenta:</h6>
+                <ul>
+                    <!-- Estos campos vienen de tu modelo 'Usuario' -->
+                    <li><strong>Email:</strong> {{ user.email }}</li>
+                    <li><strong>Nombre:</strong> {{ user.nombre|default:"No especificado" }}</li>
+                    <li><strong>Tipo de cuenta:</strong> {{ user.get_tipo_display }}</li>
+                    <li><strong>Género:</strong> {{ user.get_genero_display|default:"No especificado" }}</li>
+                    <li><strong>Teléfono:</strong> {{ user.telefono|default:"No especificado" }}</li>
+                </ul>
+
+                {% if user.tipo == 'candidato' %}
+                    <a href="#" class="btn btn-primary">Buscar Empleos</a>
+                    <a href="#" class="btn btn-outline-secondary">Editar mi Perfil</a>
+                {% elif user.tipo == 'empresa' %}
+                    <a href="#" class="btn btn-primary">Publicar Oferta</a>
+                    <a href="#" class="btn btn-outline-secondary">Ver Candidatos</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Mis Matches{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                
+                <h1 class="text-center mb-4">Mis Matches</h1>
+                <p class="text-center text-muted">
+                    Aquí están todas tus conexiones. ¡Haz clic en una para iniciar una conversación!
+                </p>
+                <hr>
+
+                <div class="list-group">
+                    {% for solicitud in matches %}
+                        <!-- 
+                            Cada 'solicitud' (match) es un enlace a la sala de chat.
+                            Usamos 'solicitud.id' para la URL del chat.
+                        -->
+                        <a href="{% url 'chat' solicitud.id %}" class="list-group-item list-group-item-action p-3">
+                            <div class="d-flex w-100 justify-content-between">
+                                
+                                <!-- 
+                                    Lógica para mostrar el nombre de la OTRA persona.
+                                -->
+                                {% if user.perfil.tipo == 'candidato' %}
+                                    <!-- Si soy candidato, muestro el nombre del empleador -->
+                                    <h5 class="mb-1">
+                                        {{ solicitud.oferta.perfil_empleador.user.first_name }}
+                                        {{ solicitud.oferta.perfil_empleador.user.last_name }}
+                                    </h5>
+                                {% else %}
+                                    <!-- Si soy empleador, muestro el nombre del candidato -->
+                                    <h5 class="mb-1">
+                                        {{ solicitud.User_candidato.first_name }}
+                                        {{ solicitud.User_candidato.last_name }}
+                                    </h5>
+                                {% endif %}
+                                
+                                <small>Match: {{ solicitud.fecha_postulacion|date:"d M Y" }}</small>
+                            </div>
+                            
+                            <!-- Mostramos el título de la oferta del match -->
+                            <p class="mb-1 text-muted">
+                                Oferta: <strong>{{ solicitud.oferta.titulo }}</strong>
+                            </p>
+                            
+                            <!-- (Opcional: Mostrar último mensaje) -->
+                            <!-- <small>Último mensaje: ...</small> -->
+                        </a>
+                    {% empty %}
+                        <p class="text-center text-muted mt-3">
+                            Aún no tienes ningún match.
+                            {% if user.perfil.tipo == 'candidato' %}
+                                ¡Sigue postulando!
+                            {% else %}
+                                ¡Sigue revisando candidatos!
+                            {% endif %}
+                        </p>
+                    {% endfor %}
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

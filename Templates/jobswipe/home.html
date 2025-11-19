@@ -1,0 +1,168 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio - JobSwipe{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+            
+                {% if user.is_authenticated %}
+                    
+                    <!-- Título general -->
+                    <h1 class="text-center">¡Bienvenido/a, {{ user.first_name|default:user.username }}!</h1>
+                    
+                    <hr>
+
+                    <!-- --------------------------------- -->
+                    <!-- --- VISTA PARA EL EMPLEADOR --- -->
+                    <!-- --------------------------------- -->
+                    {% if user.perfil.tipo == 'empleador' %}
+                    <div class="text-center">
+                        <p class="lead">{{ mensaje }}</p>
+                        <a href="{% url 'crear_oferta' %}" class="btn btn-primary btn-lg my-3">
+                            + Publicar Nueva Oferta
+                        </a>
+                    </div>
+
+                    <h3 class="mt-5">Tus Ofertas Publicadas</h3>
+                    <div class="list-group">
+                        {% for oferta in ofertas_propias %}
+                            <div class="list-group-item list-group-item-action p-3">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ oferta.titulo }}</h5>
+                                    <small>Publicada: {{ oferta.fecha_publicacion|date:"d M Y" }}</small>
+                                </div>
+                                <p class="mb-1">{{ oferta.descripcion|truncatewords:20 }}</p>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <div>
+                                        <small>Estado: <span class="badge bg-success">{{ oferta.get_estado_display }}</span></small>
+                                        <!-- ¡NUEVO! Badge de Inclusión -->
+                                        {% if oferta.es_inclusion %}
+                                            <span class="badge bg-success">Ley 21.015</span>
+                                        {% endif %}
+                                    </div>
+                                    <div>
+                                        <!-- ¡NUEVO! Botón de Revisar -->
+                                        <a href="{% url 'revisar_candidatos' oferta.id %}" class="btn btn-info btn-sm">
+                                            Revisar Candidatos
+                                        </a>
+                                        
+                                        <!-- ¡NUEVO! Botón de Eliminar (dentro de un form) -->
+                                        <form action="{% url 'eliminar_oferta' oferta.id %}" method="POST" class="d-inline ms-2">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta oferta?')">
+                                                Eliminar
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center mt-3">Aún no has publicado ninguna oferta.</p>
+                        {% endfor %}
+                    </div>
+
+                    <!-- --------------------------------- -->
+                    <!-- --- VISTA PARA EL CANDIDATO --- -->
+                    <!-- --------------------------------- -->
+                    {% elif user.perfil.tipo == 'candidato' %}
+                    <div class="text-center">
+                        <p class="lead">{{ mensaje }}</p>
+                    </div>
+
+                    <h3 class="mt-4 text-center">Ofertas Disponibles para ti</h3>
+                    <div class="row">
+                        {% for oferta in ofertas %}
+                            <div class="col-md-10 offset-md-1 mb-3">
+                                <div class="card shadow-sm">
+                                    <div class="card-body">
+                                        <h5 class="card-title">{{ oferta.titulo }}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">
+                                            {{ oferta.perfil_empleador.user.first_name }} 
+                                            ({{ oferta.categoria.nombre }})
+                                        </h6>
+                                        
+                                        <!-- ¡NUEVO! Badge de Inclusión para el candidato -->
+                                        {% if oferta.es_inclusion %}
+                                            <span class="badge bg-success mb-2">Apto Ley 21.015</span>
+                                        {% endif %}
+
+                                        <p class="card-text">{{ oferta.descripcion|truncatewords:30 }}</p>
+                                        
+                                        <!-- ¡LÓGICA DEL "SWIPE" ACTUALIZADA! -->
+                                        <div class="text-center mt-3">
+                                            
+                                            <!-- 
+                                                El botón de rechazar por ahora no hace nada
+                                                (En un Tinder real, esto ocultaría la tarjeta)
+                                            -->
+                                            <a href="?next" class="btn btn-danger btn-lg me-3">Rechazar (X)</a>
+
+                                            <!-- 
+                                                Lógica para Postular (Aceptar)
+                                                Comprueba si el ID de esta oferta está en la lista de IDs
+                                                a las que el usuario ya postuló.
+                                            -->
+                                            {% if oferta.id in ofertas_postuladas_ids %}
+                                                
+                                                <!-- Si ya postuló, muestra un botón desactivado -->
+                                                <button type="button" class="btn btn-outline-secondary btn-lg" disabled>
+                                                    Ya Postulaste
+                                                </button>
+
+                                            {% else %}
+                                                
+                                                <!-- Si no, muestra el formulario para postular -->
+                                                <form action="{% url 'postular_oferta' oferta.id %}" method="POST" class="d-inline">
+                                                    {% csrf_token %}
+                                                    <button type="submit" class="btn btn-success btn-lg">
+                                                        Postular (✓)
+                                                    </button>
+                                                </form>
+
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <p class="text-muted text-center mt-3">
+                                No hay ofertas de empleo disponibles en este momento. ¡Vuelve a revisar pronto!
+                            </p>
+                        {% endfor %}
+                    </div>
+                    
+                    <!-- --------------------------------- -->
+                    <!-- --- VISTA PARA EL ADMIN --- -->
+                    <!-- --------------------------------- -->
+                    {% elif user.is_staff %}
+                    <div class="text-center">
+                        <p class="lead">{{ mensaje }}</p>
+                        <a href="{% url 'admin:index' %}" class="btn btn-secondary">Ir al Panel de Admin</a>
+                    </div>
+                    {% endif %}
+
+                {% else %}
+                    <!-- Si el usuario es anónimo -->
+                    <div class="text-center">
+                        <h1 class="mb-3">Encuentra tu próximo empleo.</h1>
+                        <p class="lead">Bienvenido/a a JobSwipe, la plataforma de empleo inclusiva.</p>
+                        <img src="https://placehold.co/600x300/f0f0f0/333?text=JobSwipe+Inclusivo" 
+                             class="img-fluid rounded my-4" 
+                             alt="Imagen de bienvenida de JobSwipe">
+                        
+                        <p>Únete a nuestra comunidad para conectar con oportunidades laborales que valoran tus habilidades.</p>
+                        <div class="mt-4">
+                            <a href="{% url 'login' %}" class="btn btn-primary btn-lg me-2">Iniciar Sesión</a>
+                            <a href="{% url 'register' %}" class="btn btn-outline-primary btn-lg">Registrarse</a>
+                        </div>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Completa tu Perfil{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card shadow-sm border-0 text-center">
+            <div class="card-body p-4 p-md-5">
+                
+                <h1 class="h2 mb-3">¡Bienvenido/a a JobSwipe, {{ user.first_name|default:user.username }}!</h1>
+                <p class="lead text-muted">Para continuar, por favor dinos qué buscas en nuestra plataforma.</p>
+                <p>¿Eres un candidato buscando empleo o un empleador buscando talento?</p>
+                
+                <div class="row mt-5">
+                    <!-- Opción 1: Candidato -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Soy un Candidato</h5>
+                                <p class="card-text">Busco oportunidades de empleo, quiero deslizar ofertas y conectar con empresas.</p>
+                                <!-- 
+                                    Este formulario envía 'tipo=candidato' a la vista 'elegir_rol_view' 
+                                -->
+                                <form action="{% url 'elegir_rol' %}" method="post" class="d-grid mt-auto">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="tipo" value="candidato">
+                                    <button type="submit" class="btn btn-primary btn-lg">Buscar Empleo</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Opción 2: Empleador -->
+                    <div class="col-md-6 mb-3">
+                        <div class="card h-100">
+                            <div class="card-body d-flex flex-column">
+                                <h5 class="card-title">Soy un Empleador</h5>
+                                <p class="card-text">Quiero publicar ofertas de empleo, encontrar candidatos y gestionar mi equipo.</p>
+                                <!-- 
+                                    Este formulario envía 'tipo=empleador' a la vista 'elegir_rol_view' 
+                                -->
+                                <form action="{% url 'elegir_rol' %}" method="post" class="d-grid mt-auto">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="tipo" value="empleador">
+                                    <button type="submit" class="btn btn-outline-primary btn-lg">Publicar Oferta</button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

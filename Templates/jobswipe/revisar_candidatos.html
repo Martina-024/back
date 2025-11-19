@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+
+{% block title %}Revisar Candidatos - {{ oferta.titulo }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+
+        <h2 class="text-center mb-1">Revisando Candidatos</h2>
+        <p class="text-center text-muted mb-4">Para la oferta: <strong>{{ oferta.titulo }}</strong></p>
+
+        {% if solicitud %}
+            <!-- 
+                Si 'solicitud' existe, significa que hay un candidato pendiente.
+                Mostramos la "tarjeta" de ese candidato.
+            -->
+            <div class="card shadow-lg border-0 mb-3">
+                
+                <!-- Opcional: Foto del perfil -->
+                {% if solicitud.User_candidato.perfil.foto %}
+                    <img src="{{ solicitud.User_candidato.perfil.foto.url }}" class="card-img-top" alt="Foto de {{ solicitud.User_candidato.first_name }}">
+                {% else %}
+                    <img src="https://placehold.co/600x400/f0f0f0/333?text=Sin+Foto" class="card-img-top" alt="Foto de {{ solicitud.User_candidato.first_name }}">
+                {% endif %}
+
+                <div class="card-body p-4">
+                    <h3 class="card-title text-center">{{ solicitud.User_candidato.first_name }} {{ solicitud.User_candidato.last_name }}</h3>
+                    <h5 class="text-center text-muted mb-3">{{ solicitud.User_candidato.email }}</h5>
+                    
+                    <hr>
+
+                    <h5>Descripción Profesional</h5>
+                    <p>{{ solicitud.User_candidato.perfil.descripcion_profesional|default:"No especificado."|linebreaks }}</p>
+
+                    <h5>Habilidades</h5>
+                    <p>{{ solicitud.User_candidato.perfil.habilidades|default:"No especificado."|linebreaks }}</p>
+
+                    <h5>Experiencia</h5>
+                    <p>{{ solicitud.User_candidato.perfil.experiencia|default:"No especificado."|linebreaks }}</p>
+                </div>
+                
+                <!-- 
+                    ACCIONES (TINDER)
+                    Estos son dos formularios separados que apuntan a las vistas de 
+                    aceptar/rechazar que creamos en views.py
+                -->
+                <div class="card-footer p-3">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-between">
+                        <!-- Botón de RECHAZAR -->
+                        <form action="{% url 'rechazar_solicitud' solicitud.id %}" method="POST" class="flex-fill">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-lg w-100">
+                                Rechazar (X)
+                            </button>
+                        </form>
+                        
+                        <!-- Botón de ACEPTAR -->
+                        <form action="{% url 'aceptar_solicitud' solicitud.id %}" method="POST" class="flex-fill">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success btn-lg w-100">
+                                Aceptar (✓)
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        {% else %}
+            <!-- 
+                Si 'solicitud' es None, significa que ya no hay candidatos 
+                pendientes para esta oferta.
+            -->
+            <div class="card shadow-sm border-0 text-center">
+                <div class="card-body p-5">
+                    <h3 class="card-title">¡Todo listo!</h3>
+                    <p class="lead text-muted">No hay más candidatos pendientes por revisar para esta oferta.</p>
+                    <a href="{% url 'home' %}" class="btn btn-outline-primary mt-3">Volver al Inicio</a>
+                </div>
+            </div>
+        {% endif %}
+
+    </div>
+</div>
+{% endblock %}

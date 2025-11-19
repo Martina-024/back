@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Registro - JobSwipe{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+        <div class="card shadow-sm border-0">
+            <div class="card-body p-4 p-md-5">
+                <h2 class="text-center mb-4">Crear tu cuenta</h2>
+                <form method="post" novalidate>
+                    {% csrf_token %}
+                    
+                    <!-- CORREGIDO: Errores solo de user_form -->
+                    {% if user_form.non_field_errors %}
+                        <div class="alert alert-danger">
+                            {% for error in user_form.non_field_errors %}{{ error }}{% endfor %}
+                        </div>
+                    {% endif %}
+
+                    <fieldset class="mb-4">
+                        <legend class="h5">Datos de la Cuenta</legend>
+                        <!-- Usamos un bucle para renderizar los campos del UserForm -->
+                        {% for field in user_form %}
+                            <div class="mb-3">
+                                <label for="{{ field.id_for_label }}" class="form-label">{{ field.label }}</label>
+                                <input type="{{ field.field.widget.input_type }}" 
+                                       name="{{ field.name }}" 
+                                       id="{{ field.id_for_label }}"
+                                       class="form-control {% if field.errors %}is-invalid{% endif %}"
+                                       placeholder="{{ field.help_text }}">
+                                {% if field.errors %}
+                                    <div class="invalid-feedback">
+                                        {% for error in field.errors %}{{ error }}{% endfor %}
+                                    </div>
+                                {% endif %}
+                                {% if field.help_text and field.name != 'username' %}
+                                    <small class="form-text text-muted">{{ field.help_text }}</small>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </fieldset>
+                    
+                    <!-- 
+                    CORREGIDO: Fieldset de "Datos del Perfil" ELIMINADO.
+                    Ya no preguntamos por 'tipo' ni 'telefono' aquí.
+                    -->
+
+                    <div class="d-grid mt-4">
+                        <button type="submit" class="btn btn-primary btn-lg">Registrarse</button>
+                    </div>
+                </form>
+                <hr>
+                <div class="text-center">
+                    <p>¿Ya tienes una cuenta? <a href="{% url 'login' %}">Inicia sesión aquí</a>.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
