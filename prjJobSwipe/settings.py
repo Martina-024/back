@@ -82,13 +82,18 @@ WSGI_APPLICATION = 'prjJobSwipe.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'jobswipedb',
-        'USER': 'root',
-        'PASSWORD': 'admin123',
-        'HOST': 'localhost',
-        'PORT': '3306',
+        'NAME': 'defaultdb',
+        'USER': 'avnadmin',
+        'PASSWORD': config('DB_PASSWORD'),
+        'HOST': 'mysql-5eb7f2b-julioquispe2407-7f2f.b.aivencloud.com',
+        'PORT': '12528',
+        'OPTIONS': {
+            'ssl': {
+                'ca': str(BASE_DIR / 'ca.pem')
+                }
+            }
+        }
     }
-}
 
 
 # Password validation

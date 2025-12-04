@@ -111,3 +111,14 @@ class Mensaje(models.Model):
 
     class Meta:
         ordering = ['fecha']
+
+# --- AgreGar estas lineas al model.py
+# Esto crea automáticamente un Perfil cuando se crea un User
+#@receiver(post_save, sender=User)
+#def create_user_profile(sender, instance, created, **kwargs):
+#    if created:
+#        Perfil.objects.create(user=instance)
+
+#@receiver(post_save, sender=User)
+#def save_user_profile(sender, instance, **kwargs):
+#    instance.perfil.save()

@@ -1,0 +1,17 @@
+# --- Archivos de sistema y entorno ---
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+
+# --- Base de datos local (por si acaso) ---
+db.sqlite3
+
+# --- Archivos de sistema operativo ---
+.DS_Store
+Thumbs.db
+
+# --- Certificados ---
+# Opcional: Si quieres que tu compañera descargue el suyo propio, descomenta esto:
+# *.pem
