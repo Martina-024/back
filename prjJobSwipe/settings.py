@@ -83,14 +83,15 @@ WSGI_APPLICATION = 'prjJobSwipe.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
-DATABASE_URL = config('DATABASE_URL', default=None)
+DATABASE_URL = os.environ.get('DATABASE_URL')
 
 if DATABASE_URL:
+    # Si Render nos da la URL, la usamos:
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
 else:
-    # Si no hay DATABASE_URL, usa la configuración local (Esto lo usa tu PC)
+    # Si no hay URL (estamos en local), usamos tus variables:
     DATABASES = {
         'default': {
             'ENGINE': 'django.db.backends.mysql',
