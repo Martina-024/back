@@ -29,8 +29,7 @@ class OfertaDeEmpleoForm(forms.ModelForm):
         model = OfertaDeEmpleo
         # --- ¡CORRECCIÓN AQUÍ! ---
         # Añadimos el nuevo campo de inclusión
-        fields = ('titulo', 'descripcion', 'categoria', 'es_inclusion')
-        # --------------------------
+        fields = ['titulo', 'descripcion', 'categoria', 'es_inclusion', 'moneda', 'sueldo']        # --------------------------
         
         widgets = {
             'descripcion': forms.Textarea(attrs={'rows': 4}),
@@ -39,6 +38,8 @@ class OfertaDeEmpleoForm(forms.ModelForm):
             'titulo': 'Título del Puesto',
             'descripcion': 'Descripción del Puesto',
             'categoria': 'Categoría del Puesto',
+            'sueldo': 'Sueldo (Opcional)',
+            'moneda': 'Tipo de Moneda'
             # NOTA: No necesitamos 'es_inclusion' aquí.
             # El ModelForm tomará el 'verbose_name' y 'help_text' del modelo.
         }

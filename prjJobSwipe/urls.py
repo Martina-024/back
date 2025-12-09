@@ -1,18 +1,24 @@
 from django.contrib import admin
 from django.urls import path, include
 
+# Importanciones para la API
+from rest_framework import routers, viewsets
+from jobswipe.models import OfertaDeEmpleo
+from jobswipe.serializers import OfertaSerializer
+
+# Config fde la vista
+class OfertaViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = OfertaDeEmpleo.objects.filter(estado='activa')
+    serializer_class = OfertaSerializer
+
+# Configdel router
+router = routers.DefaultRouter()
+router.register(r'ofertas', OfertaViewSet)
+
+
 urlpatterns = [
-    # 1. URLs del panel de Admin
     path('admin/', admin.site.urls),
-    
-    # 2. URLs de autenticación de Django (para /login/, /logout/)
-    # Las ponemos aquí para que se carguen correctamente
+    path('api/', include(router.urls)),
     path('', include('django.contrib.auth.urls')),
-    
-    # 3. URLs de tu aplicación (para la página de inicio '/', /register/, etc.)
-    # Esta debe ir DESPUÉS de las de auth para que las intercepte correctamente.
     path('', include('jobswipe.urls')),
 ]
-
-# NO DEBE HABER NADA MÁS AQUÍ
-# (Especialmente no debe haber líneas con "re_path", "static.serve" o "^(?P<path>.*)$")

@@ -24,10 +24,10 @@ class Perfil(models.Model):
     habilidades = models.TextField(blank=True, null=True, help_text="Separadas por comas")
     experiencia = models.TextField(blank=True, null=True)
     foto = models.ImageField(upload_to='fotos_perfil/', blank=True, null=True)
+    es_pcd = models.BooleanField(default=False, verbose_name="Persona con Discapacidad")
 
     def __str__(self):
-        return self.user.username
-
+        return f"{self.user.username} - {self.tipo}"
 # --- Categorías de Empleo ---
 class CategoriaDeServicio(models.Model):
     nombre = models.CharField(max_length=100, unique=True)
@@ -59,6 +59,16 @@ class OfertaDeEmpleo(models.Model):
         default=False,
         verbose_name="Oferta bajo Ley 21.015 (Inclusión)",
         help_text="Marcar si esta vacante se acoge a la Ley de Inclusión Laboral."
+    )
+    moneda = models.CharField(
+        max_length=3, 
+        choices=[('CLP', 'Pesos Chilenos (CLP)'), ('USD', 'Dólares (USD)')],
+        default='CLP',
+        blank=True, null=True # Opcional
+    )
+    sueldo = models.PositiveIntegerField(
+        blank=True, null=True, # Opcional
+        help_text="Opcional. Ej: 500000"
     )
     # ----------------------------------
 

@@ -8,16 +8,24 @@
         <div class="card shadow-sm border-0">
             <div class="card-body p-4 p-md-5">
             
+                {% if indicadores %}
+                <div class="alert alert-info d-flex flex-column flex-md-row justify-content-center align-items-center gap-3 shadow-sm mb-4">
+                    <div class="d-flex align-items-center">
+                        <span class="fs-5 me-2">📈</span>
+                        <strong>Indicadores Hoy:</strong>
+                    </div>
+                    <div class="d-flex gap-4">
+                        <span>🇨🇱 UF: <strong>${{ indicadores.uf }}</strong></span>
+                        <span>🇺🇸 Dólar: <strong>${{ indicadores.dolar }}</strong></span>
+                        <span>🇪🇺 Euro: <strong>${{ indicadores.euro }}</strong></span>
+                    </div>
+                </div>
+                {% endif %}
                 {% if user.is_authenticated %}
                     
-                    <!-- Título general -->
                     <h1 class="text-center">¡Bienvenido/a, {{ user.first_name|default:user.username }}!</h1>
-                    
                     <hr>
 
-                    <!-- --------------------------------- -->
-                    <!-- --- VISTA PARA EL EMPLEADOR --- -->
-                    <!-- --------------------------------- -->
                     {% if user.perfil.tipo == 'empleador' %}
                     <div class="text-center">
                         <p class="lead">{{ mensaje }}</p>
@@ -38,18 +46,26 @@
                                 <div class="d-flex justify-content-between align-items-center mt-2">
                                     <div>
                                         <small>Estado: <span class="badge bg-success">{{ oferta.get_estado_display }}</span></small>
-                                        <!-- ¡NUEVO! Badge de Inclusión -->
+                                        
                                         {% if oferta.es_inclusion %}
                                             <span class="badge bg-success">Ley 21.015</span>
                                         {% endif %}
+
+                                        {% if oferta.sueldo %}
+                                            <span class="badge bg-secondary ms-1">
+                                                💰 {{ oferta.moneda }} ${{ oferta.sueldo }}
+                                            </span>
+                                        {% endif %}
                                     </div>
                                     <div>
-                                        <!-- ¡NUEVO! Botón de Revisar -->
                                         <a href="{% url 'revisar_candidatos' oferta.id %}" class="btn btn-info btn-sm">
                                             Revisar Candidatos
                                         </a>
+
+                                        <a href="{% url 'editar_oferta' oferta.id %}" class="btn btn-warning btn-sm ms-2">
+                                            Editar
+                                        </a>
                                         
-                                        <!-- ¡NUEVO! Botón de Eliminar (dentro de un form) -->
                                         <form action="{% url 'eliminar_oferta' oferta.id %}" method="POST" class="d-inline ms-2">
                                             {% csrf_token %}
                                             <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('¿Estás seguro de que quieres eliminar esta oferta?')">
@@ -64,14 +80,35 @@
                         {% endfor %}
                     </div>
 
-                    <!-- --------------------------------- -->
-                    <!-- --- VISTA PARA EL CANDIDATO --- -->
-                    <!-- --------------------------------- -->
                     {% elif user.perfil.tipo == 'candidato' %}
                     <div class="text-center">
                         <p class="lead">{{ mensaje }}</p>
                     </div>
 
+                    <div class="d-flex justify-content-center my-3">
+                        <div class="card p-3 shadow-sm border-{{ user.perfil.es_pcd|yesno:'success,secondary' }}">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="text-start">
+                                    <h6 class="mb-0 fw-bold">Filtro Ley 21.015</h6>
+                                    <small class="text-muted">
+                                        {% if user.perfil.es_pcd %}
+                                            Prioridad Inclusión Laboral.
+                                        {% else %}
+                                            Viendo todas las ofertas.
+                                        {% endif %}
+                                    </small>
+                                </div>
+                                
+                                <a href="{% url 'toggle_pcd' %}" class="btn {% if user.perfil.es_pcd %}btn-success{% else %}btn-outline-secondary{% endif %}">
+                                    {% if user.perfil.es_pcd %}
+                                        FILTRO ACTIVADO
+                                    {% else %}
+                                        Activar Filtro
+                                    {% endif %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
                     <h3 class="mt-4 text-center">Ofertas Disponibles para ti</h3>
                     <div class="row">
                         {% for oferta in ofertas %}
@@ -84,37 +121,30 @@
                                             ({{ oferta.categoria.nombre }})
                                         </h6>
                                         
-                                        <!-- ¡NUEVO! Badge de Inclusión para el candidato -->
                                         {% if oferta.es_inclusion %}
                                             <span class="badge bg-success mb-2">Apto Ley 21.015</span>
                                         {% endif %}
 
+                                        {% if oferta.sueldo %}
+                                            <span class="badge bg-secondary mb-2">
+                                                💰 {{ oferta.moneda }} ${{ oferta.sueldo }}
+                                            </span>
+                                        {% endif %}
+
                                         <p class="card-text">{{ oferta.descripcion|truncatewords:30 }}</p>
                                         
-                                        <!-- ¡LÓGICA DEL "SWIPE" ACTUALIZADA! -->
                                         <div class="text-center mt-3">
                                             
-                                            <!-- 
-                                                El botón de rechazar por ahora no hace nada
-                                                (En un Tinder real, esto ocultaría la tarjeta)
-                                            -->
                                             <a href="?next" class="btn btn-danger btn-lg me-3">Rechazar (X)</a>
 
-                                            <!-- 
-                                                Lógica para Postular (Aceptar)
-                                                Comprueba si el ID de esta oferta está en la lista de IDs
-                                                a las que el usuario ya postuló.
-                                            -->
                                             {% if oferta.id in ofertas_postuladas_ids %}
                                                 
-                                                <!-- Si ya postuló, muestra un botón desactivado -->
                                                 <button type="button" class="btn btn-outline-secondary btn-lg" disabled>
                                                     Ya Postulaste
                                                 </button>
 
                                             {% else %}
                                                 
-                                                <!-- Si no, muestra el formulario para postular -->
                                                 <form action="{% url 'postular_oferta' oferta.id %}" method="POST" class="d-inline">
                                                     {% csrf_token %}
                                                     <button type="submit" class="btn btn-success btn-lg">
@@ -134,9 +164,6 @@
                         {% endfor %}
                     </div>
                     
-                    <!-- --------------------------------- -->
-                    <!-- --- VISTA PARA EL ADMIN --- -->
-                    <!-- --------------------------------- -->
                     {% elif user.is_staff %}
                     <div class="text-center">
                         <p class="lead">{{ mensaje }}</p>
@@ -145,10 +172,10 @@
                     {% endif %}
 
                 {% else %}
-                    <!-- Si el usuario es anónimo -->
                     <div class="text-center">
                         <h1 class="mb-3">Encuentra tu próximo empleo.</h1>
                         <p class="lead">Bienvenido/a a JobSwipe, la plataforma de empleo inclusiva.</p>
+                        
                         <img src="https://placehold.co/600x300/f0f0f0/333?text=JobSwipe+Inclusivo" 
                              class="img-fluid rounded my-4" 
                              alt="Imagen de bienvenida de JobSwipe">

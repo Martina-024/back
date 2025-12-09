@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/5.2/ref/settings/
 import os
 from pathlib import Path
 from dotenv import load_dotenv
+from decouple import config
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -29,7 +30,7 @@ SECRET_KEY = 'django-insecure-dki08yn&jbzuss0xy91ajve@s_gs&pvyor4)5xx$y#)8ogu_y^
 DEBUG = True
 DEBUG = os.environ.get('DEBUG') == 'True'
 
-ALLOWED_HOSTS = ['127.0.0.1', 'localhost', '10.58.48.123']
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -44,10 +45,12 @@ INSTALLED_APPS = [
     'jobswipe',
     'crispy_forms',
     'crispy_bootstrap5',
+    'rest_framework',
 ]
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,7 +92,7 @@ DATABASES = {
         'PORT': '12528',
         'OPTIONS': {
             'ssl': {
-                'ca': str(BASE_DIR / 'ca.pem')
+                'ca': os.path.join(BASE_DIR, 'ca.pem')
                 }
             }
         }
@@ -131,6 +134,8 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.2/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.2/ref/settings/#default-auto-field
