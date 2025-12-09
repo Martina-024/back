@@ -90,7 +90,7 @@ if DATABASE_URL:
     DATABASES = {
         'default': dj_database_url.parse(DATABASE_URL)
     }
-else:
+else: #intento nuevo
     # Si no hay URL (estamos en local), usamos tus variables:
     DATABASES = {
         'default': {
