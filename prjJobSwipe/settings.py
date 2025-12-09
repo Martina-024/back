@@ -84,7 +84,7 @@ WSGI_APPLICATION = 'prjJobSwipe.wsgi.application'
 # https://docs.djangoproject.com/en/5.2/ref/settings/#databases
 
 DATABASE_URL = os.environ.get('DATABASE_URL')
-
+#forzando actualizacion para render
 if DATABASE_URL:
     # Si Render nos da la URL, la usamos:
     DATABASES = {
